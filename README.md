@@ -23,15 +23,25 @@ Provide an example of data (e.g., a list of integers) and a function (e.g., squa
 example output of finished program:
 
 Worker 3 processed data 4 -> result 16
+
 Worker 7 processed data 8 -> result 64
+
 Worker 8 processed data 9 -> result 81
+
 Worker 5 processed data 6 -> result 36
+
 Worker 4 processed data 5 -> result 25
+
 Worker 1 processed data 2 -> result 4
+
 Worker 0 processed data 1 -> result 1
+
 Worker 9 processed data 10 -> result 100
+
 Worker 2 processed data 3 -> result 9
+
 Worker 6 processed data 7 -> result 49
+    
 All workers have finished processing.
 
 order of completion is not guaranteed with go routines so different workers can output result at different time
