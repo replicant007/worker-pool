@@ -1,6 +1,11 @@
 # worker-pool
 Golang simple worker pool
 
+## What has been exercised:
+- how to consume data with the help of sync.Mutex lock & unlock
+- how to consume data with the help channels
+- how to write and read from global sync.Map
+
 ## Task Requirements:
  
 Create a Golang Worker Function:
