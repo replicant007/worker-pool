@@ -8,6 +8,12 @@ import (
 )
 
 var mu sync.Mutex
+var metrics sync.Map
+
+type workerMetrics struct {
+	taskCount int
+	totalTime time.Duration
+}
 
 func worker(id int, nums *[]int, wg *sync.WaitGroup) {
 	defer wg.Done()
@@ -27,7 +33,15 @@ func worker(id int, nums *[]int, wg *sync.WaitGroup) {
 		fmt.Printf("Worker %d processed data %d -> result %d\n", id, x, x*x)
 		delay := time.Duration(rand.Intn(10))
 		time.Sleep(delay * time.Second)
-		fmt.Printf("Worker %d slept for %v\n", id, delay*time.Second)
+
+		if value, exists := metrics.Load(id); !exists {
+			metrics.Store(id, workerMetrics{1, delay})
+		} else {
+			wm := value.(workerMetrics)
+			wm.taskCount += 1
+			wm.totalTime += delay
+			metrics.Store(id, wm)
+		}
 	}
 }
 
@@ -44,4 +58,12 @@ func main() {
 
 	wg.Wait()
 	fmt.Println("All workers have finished processing.")
+	fmt.Println()
+
+	metrics.Range(func(key, value any) bool {
+		id := key.(int)
+		wm := value.(workerMetrics)
+		fmt.Printf("Worker %d → Tasks: %d, Total Time: %v\n", id, wm.taskCount, wm.totalTime)
+		return true
+	})
 }
