@@ -64,6 +64,25 @@ func updateMetrics(id int, delay time.Duration) {
 	}
 }
 
+func printMetrics(metrics *sync.Map) {
+	type element struct {
+		key   int
+		value workerMetrics
+	}
+
+	var elements []element
+	metrics.Range(func(key, value any) bool {
+		elements = append(elements, element{key.(int), value.(workerMetrics)})
+		return true
+	})
+	sort.Slice(elements, func(i, j int) bool {
+		return elements[i].key < elements[j].key
+	})
+	for _, el := range elements {
+		fmt.Printf("Worker %02d | Tasks: %-3d | Time Spent: %-8v\n", el.key, el.value.taskCount, el.value.totalTime)
+	}
+}
+
 func main() {
 
 	nums := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -85,20 +104,5 @@ func main() {
 	wg.Wait()
 	fmt.Println("\nAll workers have finished processing.")
 
-	type element struct {
-		key   int
-		value workerMetrics
-	}
-
-	var elements []element
-	metrics.Range(func(key, value any) bool {
-		elements = append(elements, element{key.(int), value.(workerMetrics)})
-		return true
-	})
-	sort.Slice(elements, func(i, j int) bool {
-		return elements[i].key < elements[j].key
-	})
-	for _, el := range elements {
-		fmt.Printf("Worker %d → Tasks: %d, Total Time: %v\n", el.key, el.value.taskCount, el.value.totalTime)
-	}
+	printMetrics(&metrics)
 }
